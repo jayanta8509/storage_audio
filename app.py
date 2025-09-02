@@ -15,7 +15,7 @@ app = FastAPI(title="Audio Storage API", version="1.0.0")
 # Configuration
 STORAGE_DIR = "audio_storage"
 EXPIRY_HOURS = 12
-BASE_URL = "http://localhost:8000"  # Change this to your actual domain
+BASE_URL = "http://localhost:8072"  # Change this to your actual domain
 
 # In-memory storage for file metadata (in production, use a database)
 file_registry: Dict[str, dict] = {}
@@ -171,4 +171,4 @@ async def upload_audio(
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8072)
