@@ -103,7 +103,6 @@ async def upload_audio(
     request: Request,
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
-    domain: str = None
 ):
     """
     Upload a binary audio file and get a secure link
@@ -143,10 +142,7 @@ async def upload_audio(
         }
         
         # Generate browser-accessible audio link
-        if domain:
-            base_url = domain
-        else:
-            base_url = get_base_url(request)
+        base_url = get_base_url(request)
         
         # Create a direct file access link using the unique filename
         secure_link = f"{base_url}/static/audio/{unique_filename}"
