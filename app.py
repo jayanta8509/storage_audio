@@ -234,7 +234,7 @@ async def upload_image(
         base_url = get_base_url(request)
         
         # Create a direct file access link using the unique filename
-        secure_link = f"{base_url}/get-image/{unique_filename}"
+        secure_link = f"{base_url}/static/images/{unique_filename}"
         
         return {
             "success": True,
@@ -250,32 +250,6 @@ async def upload_image(
         if os.path.exists(file_path):
             os.remove(file_path)
         raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
-
-@app.get("/get-image/{filename}")
-async def get_image(filename: str):
-    """
-    Get an image file by filename
-    Returns the image file directly with appropriate headers
-    """
-    # Construct the file path
-    file_path = os.path.join(IMAGE_STORAGE_DIR, filename)
-    
-    # Check if file exists
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Image not found")
-    
-    # Get the media type based on file extension
-    media_type = get_image_media_type(filename)
-    
-    # Return the file
-    return FileResponse(
-        path=file_path,
-        media_type=media_type,
-        headers={
-            "Cache-Control": "public, max-age=1200",  # 20 minutes cache
-            "Content-Disposition": f"inline; filename={filename}"
-        }
-    )
 
 
 if __name__ == "__main__":
