@@ -28,7 +28,7 @@ os.makedirs(IMAGE_STORAGE_DIR, exist_ok=True)
 
 # Mount static files to serve audio and images directly
 app.mount("/static/audio", StaticFiles(directory=STORAGE_DIR), name="audio")
-app.mount("/static/images", StaticFiles(directory=IMAGE_STORAGE_DIR), name="images")
+app.mount("/images", StaticFiles(directory=IMAGE_STORAGE_DIR), name="images")
 
 def generate_secure_token() -> str:
     """Generate a secure unique token for file access"""
@@ -234,7 +234,7 @@ async def upload_image(
         base_url = get_base_url(request)
         
         # Create a direct file access link using the unique filename
-        secure_link = f"{base_url}/static/images/{unique_filename}"
+        secure_link = f"{base_url}/images/{unique_filename}"
         
         return {
             "success": True,
