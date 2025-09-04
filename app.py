@@ -26,9 +26,8 @@ file_registry: Dict[str, dict] = {}
 os.makedirs(STORAGE_DIR, exist_ok=True)
 os.makedirs(IMAGE_STORAGE_DIR, exist_ok=True)
 
-# Mount static files to serve audio and images directly
+# Mount static files to serve both audio and images from same directory
 app.mount("/static/audio", StaticFiles(directory=STORAGE_DIR), name="audio")
-app.mount("/static/images", StaticFiles(directory=IMAGE_STORAGE_DIR), name="images")
 
 def generate_secure_token() -> str:
     """Generate a secure unique token for file access"""
@@ -209,7 +208,7 @@ async def upload_image(
     # Generate unique filename and secure token
     file_extension = get_file_extension(file.filename)
     unique_filename = f"{uuid.uuid4()}{file_extension}"
-    file_path = os.path.join(IMAGE_STORAGE_DIR, unique_filename)
+    file_path = os.path.join(STORAGE_DIR, unique_filename)  # Store in same folder as audio
     secure_token = generate_secure_token()
     
     try:
@@ -233,8 +232,8 @@ async def upload_image(
         # Generate browser-accessible image link
         base_url = get_base_url(request)
         
-        # Create a direct file access link using the unique filename
-        secure_link = f"{base_url}/static/images/{unique_filename}"
+        # Create a direct file access link using the unique filename (same path as audio)
+        secure_link = f"{base_url}/static/audio/{unique_filename}"
         
         return {
             "success": True,
