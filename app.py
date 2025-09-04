@@ -14,7 +14,7 @@ app = FastAPI(title="Audio Storage API", version="1.0.0")
 
 # Configuration
 STORAGE_DIR = "audio_storage"
-IMAGE_STORAGE_DIR = "image_storage"
+MEDIA_DIR = "media"
 EXPIRY_HOURS = 12
 IMAGE_EXPIRY_MINUTES = 20
 BASE_URL = "http://localhost:8072"  # Change this to your actual domain
@@ -24,10 +24,12 @@ file_registry: Dict[str, dict] = {}
 
 # Ensure storage directories exist
 os.makedirs(STORAGE_DIR, exist_ok=True)
-os.makedirs(IMAGE_STORAGE_DIR, exist_ok=True)
+os.makedirs(MEDIA_DIR, exist_ok=True)
 
-# Mount static files to serve both audio and images from same directory
+# Mount static files to serve audio directly (working)
 app.mount("/static/audio", StaticFiles(directory=STORAGE_DIR), name="audio")
+# Mount media files to serve images
+app.mount("/media", StaticFiles(directory=MEDIA_DIR), name="media")
 
 def generate_secure_token() -> str:
     """Generate a secure unique token for file access"""
@@ -208,7 +210,7 @@ async def upload_image(
     # Generate unique filename and secure token
     file_extension = get_file_extension(file.filename)
     unique_filename = f"{uuid.uuid4()}{file_extension}"
-    file_path = os.path.join(STORAGE_DIR, unique_filename)  # Store in same folder as audio
+    file_path = os.path.join(MEDIA_DIR, unique_filename)  # Store in media folder
     secure_token = generate_secure_token()
     
     try:
@@ -232,8 +234,8 @@ async def upload_image(
         # Generate browser-accessible image link
         base_url = get_base_url(request)
         
-        # Create a direct file access link using the unique filename (same path as audio)
-        secure_link = f"{base_url}/static/audio/{unique_filename}"
+        # Create a direct file access link using the unique filename (media path)
+        secure_link = f"{base_url}/media/{unique_filename}"
         
         return {
             "success": True,
